@@ -15,9 +15,52 @@ function renderContacts() {
 function saveContacts(){localStorage.setItem("rigaura_contacts",JSON.stringify(contacts));renderContacts();}
 $("contactForm").addEventListener("submit",e=>{e.preventDefault();if(contacts.length>=6)return alert("You can add up to 6 trusted contacts.");const name=$("contactName").value.trim(),phone=$("contactPhone").value.trim();if(!name||!phone)return;contacts.push({name,phone});saveContacts();$("contactForm").reset();});
 
+function playBuzzer(){
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) {
+      const ctx = new AudioCtx();
+      const master = ctx.createGain();
+      master.gain.value = 0.16;
+      master.connect(ctx.destination);
+      const osc = ctx.createOscillator();
+      const pulse = ctx.createGain();
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(520, ctx.currentTime + 0.22);
+      pulse.gain.setValueAtTime(0, ctx.currentTime);
+      for (let i = 0; i < 6; i++) {
+        const start = ctx.currentTime + i * 0.32;
+        pulse.gain.setValueAtTime(0, start);
+        pulse.gain.linearRampToValueAtTime(1, start + 0.035);
+        pulse.gain.setValueAtTime(1, start + 0.20);
+        pulse.gain.linearRampToValueAtTime(0, start + 0.25);
+      }
+      osc.connect(pulse); pulse.connect(master); osc.start();
+      osc.stop(ctx.currentTime + 2.0);
+      osc.onended = () => ctx.close();
+    }
+  } catch (e) { console.warn("Buzzer sound unavailable:", e); }
+  if (navigator.vibrate) navigator.vibrate([300,120,300,120,600]);
+}
+function smsLink(){
+  const place = currentLocation
+    ? "https://www.google.com/maps?q=" + currentLocation.latitude + "," + currentLocation.longitude
+    : "Location not available yet. Please call me and help.";
+  const body = "RIGAURA SOS ALERT! I may be in danger and need help. My location: " + place;
+  const numbers = contacts.map(c => c.phone.replace(/[^+\\d]/g, "")).filter(Boolean);
+  return "sms:" + numbers.join(",") + "?body=" + encodeURIComponent(body);
+}
 function activateSOS(){
-  sosActive=true;$("cancelSos").disabled=false;$("sosStatus").textContent="SOS TEST ACTIVE — emergency flow started.";$("sosModal").classList.remove("hidden");
-  $("modalText").textContent="Prototype only: no alert has been sent automatically. You can prepare an SMS for your saved contacts.";
+  sosActive=true;
+  $("cancelSos").disabled=false;
+  $("sosStatus").textContent="SOS ALERT ACTIVE — buzzer started.";
+  $("sosModal").classList.remove("hidden");
+  $("modalText").textContent=contacts.length
+    ? "Your buzzer has sounded. Open the SMS app to send the SOS message to your saved contacts."
+    : "Your buzzer has sounded. Add a trusted contact to prepare an SOS SMS.";
+  playBuzzer();
+  if (contacts.length) window.location.href = smsLink();
 }
 $("sosButton").addEventListener("click",()=>{const now=Date.now();taps=taps.filter(t=>now-t<=3000);taps.push(now);$("tapCount").textContent=taps.length+" / 5 TAPS";if(taps.length>=5){taps=[];$("tapCount").textContent="SOS ACTIVATED";activateSOS();}});
 $("closeModal").onclick=()=>$("sosModal").classList.add("hidden");
@@ -29,7 +72,7 @@ function getLocation(){
 }
 $("getLocation").onclick=getLocation;
 $("shareLocation").onclick=()=>{if(!currentLocation){getLocation();return;}const url="https://www.google.com/maps?q="+currentLocation.latitude+","+currentLocation.longitude;if(navigator.share)navigator.share({title:"My RIGAURA location",text:"Please check my location: "+url}).catch(()=>{});else window.open("sms:?body="+encodeURIComponent("Please check my location: "+url),"_self");};
-$("sendAlerts").onclick=()=>{if(!contacts.length)return alert("Please add a trusted contact first.");const place=currentLocation?"https://www.google.com/maps?q="+currentLocation.latitude+","+currentLocation.longitude:"Location not available";const body="RIGAURA SOS ALERT: I may need help. Please contact me. My location: "+place;window.location.href="sms:"+contacts.map(c=>c.phone).join(",")+"?body="+encodeURIComponent(body);};
+$("sendAlerts").onclick=()=>{if(!contacts.length)return alert("Please add a trusted contact first.");window.location.href=smsLink();};
 
 $("savePassword").onclick=()=>{const value=$("cancelPassword").value;if(value.length<4){$("passwordStatus").textContent="Please enter at least 4 characters.";return;}localStorage.setItem("rigaura_demo_password",value);$("passwordStatus").textContent="Password saved on this device (demo only).";$("cancelPassword").value="";};
 $("cancelSos").onclick=()=>{if(!sosActive)return;const entered=prompt("Enter your cancellation password");if(entered===null)return;const saved=localStorage.getItem("rigaura_demo_password");if(!saved){alert("Set your cancellation password first.");return;}if(entered!==saved){alert("Incorrect password. SOS remains active.");return;}sosActive=false;$("cancelSos").disabled=true;$("sosStatus").textContent="Test SOS cancelled successfully.";$("sosModal").classList.add("hidden");};
