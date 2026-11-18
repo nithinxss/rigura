@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7c7d7">
+  <title>RIGAURA | Your Safety Companion</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-icon">R</span><span>RIGAURA<small>YOUR SAFETY COMPANION</small></span></a>
+    <span class="ready"><i></i> DEVICE READY</span>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div><p class="eyebrow">FEEL SAFE. STAY CONNECTED.</p><h1>Your safety,<br><span>always in reach.</span></h1><p class="sub">A little tap can make a big difference.</p></div>
+      <div class="ring-illustration" aria-hidden="true"><div>R</div></div>
+    </section>
+
+    <section class="sos-card">
+      <div class="section-head"><div><p class="eyebrow">EMERGENCY</p><h2>Are you in danger?</h2></div><span class="pill">SOS READY</span></div>
+      <p class="helper">Tap the button 5 times within 3 seconds to simulate your RIGAURA ring.</p>
+      <button id="sosButton" class="sos-button"><span>SOS</span><small id="tapCount">TAP 5 TIMES</small></button>
+      <p id="sosStatus" class="status-message" role="status">Your safety circle is standing by.</p>
+      <div class="quick-links"><a class="call-button" href="tel:112">☎ &nbsp; Call 112</a><button id="shareLocation" class="outline-button">⌖ &nbsp; Share location</button></div>
+    </section>
+
+    <div class="dashboard">
+      <section class="card">
+        <div class="section-head"><div><p class="eyebrow">YOUR PEOPLE</p><h2>Trusted contacts</h2></div><span id="contactCount" class="counter">0 / 6</span></div>
+        <form id="contactForm" class="contact-form">
+          <input id="contactName" placeholder="Name" aria-label="Contact name" required maxlength="40">
+          <input id="contactPhone" placeholder="Phone number" aria-label="Phone number" type="tel" required>
+          <button type="submit" class="add-button">＋ Add</button>
+        </form>
+        <ul id="contactList" class="contact-list"><li class="empty">Add up to 6 people you trust.</li></ul>
+        <p class="note">Your contacts stay saved on this browser.</p>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">LIVE LOCATION</p><h2>Where you are</h2>
+        <div class="location-info"><span class="round-icon">⌖</span><div><strong id="locationTitle">Location not shared</strong><p id="locationText">Get your current GPS location.</p></div></div>
+        <button id="getLocation" class="primary-button">Get my location</button>
+        <a id="mapLink" class="map-link hidden" target="_blank" rel="noopener">Open in Google Maps ↗</a>
+        <a class="map-link" href="https://www.google.com/maps/search/police+stations+near+me" target="_blank" rel="noopener">Find nearby police stations ↗</a>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">EVIDENCE SUPPORT</p><h2>Safety recording</h2>
+        <div class="feature"><span class="round-icon">◉</span><div><strong>30-second recording</strong><p>Test your phone camera and microphone.</p></div></div>
+        <button id="recordButton" class="primary-button">Start test recording</button>
+        <p id="recordStatus" class="note" role="status">Recording is off.</p>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">EXTRA PROTECTION</p><h2>Secure cancellation</h2>
+        <p class="description">Set a password to cancel a test SOS alert.</p>
+        <input id="cancelPassword" type="password" placeholder="Create cancellation password">
+        <button id="savePassword" class="primary-button">Save password</button>
+        <p id="passwordStatus" class="note" role="status">Password not set.</p>
+        <button id="cancelSos" class="cancel-button" disabled>Cancel active SOS</button>
+      </section>
+    </div>
+
+    <section class="card how-card">
+      <p class="eyebrow">HOW RIGAURA WORKS</p><h2>One touch. A chain of help.</h2>
+      <div class="steps">
+        <div><b>01</b><strong>Tap five times</strong><p>5 taps in 3 seconds.</p></div>
+        <div><b>02</b><strong>Record evidence</strong><p>30-second recording.</p></div>
+        <div><b>03</b><strong>Alert your circle</strong><p>Share SOS and location.</p></div>
+        <div><b>04</b><strong>Cancel safely</strong><p>Password-protected demo.</p></div>
+      </div>
+    </section>
+    <footer>RIGAURA <span>♥</span> One touch pattern, help on the way.<small>Student project prototype · Not a replacement for emergency services.</small></footer>
+  </main>
+
+  <div id="sosModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box"><div class="alert-icon">!</div><h2 id="modalTitle">SOS test activated</h2><p id="modalText">Your emergency demo flow has started.</p><button id="sendAlerts" class="primary-button">Prepare SMS alerts</button><button id="closeModal" class="cancel-button">Close</button></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
